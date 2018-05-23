@@ -19,9 +19,7 @@
     "url": "https://github.com/noboru1981/webpack-learning/issues"
   },
   "homepage": "https://github.com/noboru1981/webpack-learning#readme",
-  "dependencies": {
-    "font-awesome": "^4.7.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
@@ -31,6 +29,7 @@
     "normalize.css": "^8.0.0",
     "sass-loader": "^7.0.1",
     "style-loader": "^0.21.0",
+    "uglifyjs-webpack-plugin": "^1.2.5",
     "url-loader": "^1.0.1",
     "webpack": "^4.8.3",
     "webpack-cli": "^2.1.3"
