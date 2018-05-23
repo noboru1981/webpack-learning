@@ -1,63 +1,94 @@
 const webpack = require("webpack");
+const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
 
-module.exports = [{
-    mode: "development",
-    entry: {
-        bundle: ["./src/js/index.js"],
-        styles: ["./src/sass/styles.scss"]
-    },
-    output: {
-        filename: "[name].js",
-        path: `${__dirname}/dist/js`
-    },
+module.exports = (env, argv) => {
+    // 基本は--modeの判別で十分だが、UglifyJSPluginのdrop_consoleを使うためにモードを取得
+    let isDevelop = argv.mode === "development";
 
-    module: {
-        rules: [{
-            test: /\.js$/,
-            exclude: /node_modules/,
-            use: [{
-                loader: "babel-loader",
-                options: {
-                    presets: ["env"]
-                }
+    return [{
+        entry: {
+            bundle: ["./src/js/index.js"]
+        },
+        output: {
+            filename: "[name].js",
+            path: `${__dirname}/dist/js`
+        },
+        devtool: isDevelop ? "source-map" : "",
+
+        module: {
+            rules: [{
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: [{
+                    loader: "babel-loader",
+                    options: {
+                        presets: ["env"]
+                    }
+                }]
+            }, {
+                // CSS Modules
+                test: /\.scss$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'style-loader'
+                    },
+                    {
+                        loader: 'css-loader',
+                        options: isDevelop ? {
+                            url: true,
+                            sourceMap: true,
+                            minimize: false,
+                            importLoaders: 2
+                        } : {
+                            url: true,
+                            sourceMap: false,
+                            minimize: true,
+                            importLoaders: 2
+                        }
+                    },
+                    {
+                        loader: 'sass-loader',
+                        options: isDevelop ? {
+                            sourceMap: true,
+                            // compressedを指定しておかないとchrome devtoolでルート要素の行番号表示になる
+                            // https://github.com/webpack-contrib/sass-loader/issues/272
+                            outputStyle: "compressed"
+                        } : {
+                            sourceMap: false
+                        }
+                    },
+                ]
+            }, {
+                test: /\.css$/,
+                use: [
+                    'style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            sourceMap: isDevelop
+                        }
+                    }
+                ]
+            }, {
+                // url-loaderの読み込み対象バイナリファイル
+                test: /\.(gif|png|jpg|eot|wof|woff|woff2|ttf|svg)$/,
+                loader: 'url-loader'
             }]
-        }, {
-            // CSS Modules
-            test: /\.scss$/,
-            exclude: /node_modules/,
-            use: [
-                'style-loader',
-                {
-                    loader: 'css-loader',
-                    options: {
-                        url: true,
-                        sourceMap: true,
-                        minimize: true,
-                    }
-                },
-                {
-                    loader: 'sass-loader',
-                    options: {
-                        sourceMap: true
-                    }
-                },
-            ]
-        }, {
-            test: /\.css$/,
-            use: [
-                'style-loader',
-                {
-                    loader: 'css-loader'
-                }
-            ]
-        }, {
-            // バイナリファイル
-            test: /\.(gif|png|jpg|eot|wof|woff|woff2|ttf|svg)$/,
-            loader: 'url-loader'
-        }]
-    },
-    plugins: [
-        new webpack.LoaderOptionsPlugin({options: {}}),
-    ],
-    devtool: "source-map"
-}];
+        },
+        plugins: [
+            new webpack.LoaderOptionsPlugin({options: {}}),
+        ],
+        optimization: {
+            minimizer:
+                isDevelop
+                    ? []
+                    : [new UglifyJSPlugin({
+                        // productionの場合はconsoleとdebuggerを破棄
+                        uglifyOptions: {
+                            compress: {drop_console: true, drop_debugger: true}
+                        }
+                    })]
+        }
+    }];
+};
