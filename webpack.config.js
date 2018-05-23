@@ -1,4 +1,3 @@
-const webpack = require("webpack");
 const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = (env, argv) => {
@@ -7,7 +6,8 @@ module.exports = (env, argv) => {
 
     return [{
         entry: {
-            bundle: ["./src/js/index.js"]
+            bundle: ["./src/js/index.js"],
+            styles: ["./src/sass/styles.scss"]
         },
         output: {
             filename: "[name].js",
@@ -76,19 +76,18 @@ module.exports = (env, argv) => {
                 loader: 'url-loader'
             }]
         },
-        plugins: [
-            new webpack.LoaderOptionsPlugin({options: {}}),
-        ],
         optimization: {
             minimizer:
                 isDevelop
                     ? []
-                    : [new UglifyJSPlugin({
-                        // productionの場合はconsoleとdebuggerを破棄
-                        uglifyOptions: {
-                            compress: {drop_console: true, drop_debugger: true}
-                        }
-                    })]
+                    : [
+                        new UglifyJSPlugin({
+                            // productionの場合はconsoleとdebuggerを破棄
+                            uglifyOptions: {
+                                compress: {drop_console: true, drop_debugger: true}
+                            }
+                        })
+                    ]
         }
     }];
 };
