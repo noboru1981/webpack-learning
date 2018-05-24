@@ -19,7 +19,10 @@
     "url": "https://github.com/noboru1981/webpack-learning/issues"
   },
   "homepage": "https://github.com/noboru1981/webpack-learning#readme",
-  "dependencies": {},
+  "dependencies": {
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0"
+  },
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",

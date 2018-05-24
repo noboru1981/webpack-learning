@@ -6,8 +6,7 @@ module.exports = (env, argv) => {
 
     return [{
         entry: {
-            bundle: ["./src/js/index.js"],
-            styles: ["./src/sass/styles.scss"]
+            bundle: ["./src/js/index.jsx"],
         },
         output: {
             filename: "[name].js",
@@ -17,69 +16,14 @@ module.exports = (env, argv) => {
 
         module: {
             rules: [{
-                test: /\.js$/,
+                test: /\.jsx$/,
                 exclude: /node_modules/,
                 use: [{
                     loader: "babel-loader",
                     options: {
-                        presets: ["env"]
+                        presets: ["env", "react"]
                     }
                 }]
-            }, {
-                // CSS Modules
-                test: /\.scss$/,
-                exclude: /node_modules/,
-                use: [
-                    {
-                        loader: 'style-loader'
-                    },
-                    {
-                        loader: 'css-loader',
-                        options: isDevelop ? {
-                            url: true,
-                            sourceMap: true,
-                            minimize: false,
-                            importLoaders: 2
-                        } : {
-                            url: true,
-                            sourceMap: false,
-                            minimize: true,
-                            importLoaders: 2
-                        }
-                    },
-                    {
-                        loader: 'sass-loader',
-                        options: isDevelop ? {
-                            sourceMap: true,
-                            // compressedを指定しておかないとchrome devtoolでルート要素の行番号表示になる
-                            // https://github.com/webpack-contrib/sass-loader/issues/272
-                            outputStyle: "compressed"
-                        } : {
-                            sourceMap: false
-                        }
-                    },
-                ]
-            }, {
-                test: /\.css$/,
-                use: [
-                    'style-loader',
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            sourceMap: isDevelop
-                        }
-                    }
-                ]
-            }, {
-                // url-loaderの読み込み対象バイナリファイル
-                test: /\.(gif|png|jpg|eot|wof|woff|woff2|ttf|svg)$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 100 * 1024,
-                    name: `[name].[ext]`,
-                    outputPath: `../img`,
-                    publicPath: `dist/img`
-                }
             }]
         },
         optimization: {
