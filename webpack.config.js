@@ -73,7 +73,13 @@ module.exports = (env, argv) => {
             }, {
                 // url-loaderの読み込み対象バイナリファイル
                 test: /\.(gif|png|jpg|eot|wof|woff|woff2|ttf|svg)$/,
-                loader: 'url-loader'
+                loader: 'url-loader',
+                options: {
+                    limit: 100 * 1024,
+                    name: `[name].[ext]`,
+                    outputPath: `../img`,
+                    publicPath: `dist/img`
+                }
             }]
         },
         optimization: {
